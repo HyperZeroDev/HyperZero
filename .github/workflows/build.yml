@@ -1,0 +1,31 @@
+name: Build HyperZero EXE
+
+on:
+  workflow_dispatch: # Sadece biz butona basınca çalışsın
+
+jobs:
+  build:
+    runs-on: windows-latest # Robotumuz Windows makine açsın
+
+    steps:
+    - name: 📥 Kodları Çek (Checkout)
+      uses: actions/checkout@v4
+
+    - name: 🐍 Python Kurulumu
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: 📦 Gerekli Kütüphaneleri Yükle
+      run: |
+        python -m pip install --upgrade pip
+        pip install customtkinter pyinstaller
+
+    - name: ⚙️ EXE'yi Derle (PyInstaller)
+      run: pyinstaller HyperZero.spec
+
+    - name: 🚀 Oluşan EXE'yi İndirilebilir Yap
+      uses: actions/upload-artifact@v4
+      with:
+        name: HyperZero-Portable
+        path: dist/HyperZero.exe
