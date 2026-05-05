@@ -1,537 +1,1526 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HyperZero - Advanced System Tool</title>
-    <style>
-        /* ==========================================
-           MODERN & MİNİMAL TASARIM SİSTEMİ (TEMA MOTORU)
-        ========================================== */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600;800&family=Fira+Code:wght@400;500&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HyperZero — Windows uygulama kalıntılarını gerçekten silin</title>
+  <meta name="description" content="HyperZero, Windows'tan kaldırdığınız programların geride bıraktığı dosyaları ve registry kayıtlarını bulup kalıcı olarak siler. Açık kaynak, MIT lisanslı." />
+  <link rel="icon" type="image/x-icon" href="hyperzerologo.ico" />
 
-        :root {
-            --bg-color: #0b0d10;
-            --surface-color: rgba(26, 29, 36, 0.6);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-primary: #ffffff;
-            --text-secondary: #94a3b8;
-            --meta-blue-start: #0062E6;
-            --meta-blue-end: #33AEFF;
-            --modal-bg: #15181e;
-            --shadow-color: rgba(0, 0, 0, 0.6);
-        }
+  <!-- Fonts: Instrument Serif for editorial accents, Geist for body, JetBrains Mono for code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30;1,9..144,400..600,50&family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-        body.light-theme {
-            --bg-color: #f4f6f9;
-            --surface-color: rgba(255, 255, 255, 0.8);
-            --border-color: rgba(0, 0, 0, 0.1);
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --modal-bg: #ffffff;
-            --shadow-color: rgba(0, 98, 230, 0.15);
-        }
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --bg-soft: #F7F7F4;
+      --bg-section: #FAFAF7;
+      --fg: #0F1419;
+      --fg-muted: #5A5F66;
+      --fg-subtle: #8B9099;
+      --border: #E8E8E2;
+      --border-soft: #F0F0EA;
+      --accent: #1877F2;
+      --accent-hover: #0F5BC4;
+      --accent-soft: #E7F0FE;
+      --critical: #D63B3B;
+      --safe: #2A8C5A;
+      --nav-bg: rgba(255, 255, 255, 0.78);
+      --grid-line: rgba(15, 20, 25, 0.05);
+      --bar-from: #FCFCFA;
+      --bar-to: #F7F7F4;
+      --frame-bg: #FFFFFF;
+      --code-bg: var(--bg-soft);
+      --shadow-deep: 0 32px 64px -16px rgba(15, 20, 25, 0.18);
+      --shadow-mid: 0 8px 24px -6px rgba(15, 20, 25, 0.10);
+      --shadow-soft: 0 2px 4px rgba(15, 20, 25, 0.04);
+      --max-width: 1180px;
+      --radius: 8px;
+    }
 
-        html { scroll-behavior: smooth; scroll-padding-top: 100px; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    [data-theme="dark"] {
+      --bg: #0E1014;
+      --bg-soft: #16191F;
+      --bg-section: #11141A;
+      --fg: #ECEEF1;
+      --fg-muted: #9BA1AB;
+      --fg-subtle: #6B7280;
+      --border: #232830;
+      --border-soft: #1A1E26;
+      --accent: #4A95F8;
+      --accent-hover: #6BA8FA;
+      --accent-soft: rgba(74, 149, 248, 0.12);
+      --critical: #F26B6B;
+      --safe: #4ADE80;
+      --nav-bg: rgba(14, 16, 20, 0.78);
+      --grid-line: rgba(255, 255, 255, 0.04);
+      --bar-from: #1A1E26;
+      --bar-to: #14171D;
+      --frame-bg: #0E1014;
+      --code-bg: #1A1E26;
+      --shadow-deep: 0 32px 64px -16px rgba(0, 0, 0, 0.6);
+      --shadow-mid: 0 8px 24px -6px rgba(0, 0, 0, 0.4);
+      --shadow-soft: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-            transition: background-color 0.4s ease, color 0.4s ease;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* SPA GÖRÜNÜM AYARLARI */
-        .page-view { display: none; opacity: 0; transition: opacity 0.4s ease; animation: fadeIn 0.4s ease forwards; }
-        .page-view.active { display: block; opacity: 1; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
-        /* ARKA PLAN BLOB EFEKTİ */
-        .bg-shapes { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background-color: var(--bg-color); transition: background-color 0.4s ease; }
-        .shape { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; animation: float 20s infinite ease-in-out alternate; }
-        .shape-1 { width: 500px; height: 500px; background: var(--meta-blue-start); top: -10%; left: -10%; }
-        .shape-2 { width: 400px; height: 400px; background: var(--meta-blue-end); bottom: -10%; right: 0%; animation-duration: 25s; animation-direction: alternate-reverse; }
-        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(80px, 80px) scale(1.1); } }
+    body {
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--fg);
+      background: var(--bg);
+      font-feature-settings: "ss01", "cv11";
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
 
-        /* ÜST MENÜ */
-        .glass-nav {
-            position: fixed; top: 0; width: 100%; padding: 1rem 3rem; background: var(--surface-color);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color);
-            z-index: 1000; display: flex; justify-content: space-between; align-items: center; transition: background-color 0.4s ease, border-color 0.4s ease;
-        }
-        .nav-brand { text-decoration: none; display: flex; align-items: center; cursor: pointer;}
-        .nav-logo-text { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; }
-        .code-bracket { color: var(--meta-blue-end); font-family: 'Fira Code', monospace; font-weight: 500; font-size: 1.5rem; }
-        .hyper-word { background: linear-gradient(to right, var(--meta-blue-start), var(--meta-blue-end)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .zero-word { color: var(--text-primary); transition: color 0.4s ease; }
+    a { color: inherit; text-decoration: none; }
 
-        .nav-links { display: flex; gap: 2rem; align-items: center; }
-        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.95rem; font-weight: 400; transition: color 0.3s; cursor: pointer;}
-        .nav-links a:hover { color: var(--text-primary); }
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 32px;
+    }
 
-        .nav-controls { display: flex; align-items: center; gap: 1rem; margin-right: 1rem; padding-right: 1rem; border-right: 1px solid var(--border-color); }
-        .theme-btn { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-secondary); transition: transform 0.3s ease; outline: none; }
-        .theme-btn:hover { transform: scale(1.1); color: var(--text-primary); }
-        
-        .lang-select { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.3rem 0.5rem; font-size: 0.85rem; outline: none; cursor: pointer; font-weight: 600; }
-        .lang-select option { background: var(--bg-color); color: var(--text-primary); }
+    /* ===== NAV ===== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--nav-bg);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+    nav.scrolled { border-bottom-color: var(--border-soft); }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+    .logo {
+      font-family: 'Geist', sans-serif;
+      font-weight: 600;
+      font-size: 17px;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-mark {
+      width: 22px;
+      height: 22px;
+      background: var(--fg);
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .nav-links a {
+      font-size: 14px;
+      color: var(--fg-muted);
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--fg); }
+    .nav-actions { display: flex; align-items: center; gap: 16px; }
 
-        .nav-btn-small { background: rgba(0, 98, 230, 0.15); color: var(--meta-blue-end) !important; border: 1px solid rgba(0, 98, 230, 0.3); padding: 0.6rem 1.4rem; border-radius: 6px; transition: all 0.3s ease !important; cursor: pointer; }
-        .nav-btn-small:hover { background: var(--meta-blue-start); color: white !important; border-color: var(--meta-blue-start); }
+    .lang-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 13px;
+      color: var(--fg-muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .lang-toggle button {
+      background: transparent;
+      border: 0;
+      padding: 3px 9px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--fg-muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .lang-toggle button.active {
+      background: var(--fg);
+      color: var(--bg);
+    }
 
-        /* HERO SECTION */
-        .hero { min-height: 85vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 8rem 2rem 2rem 2rem; position: relative; z-index: 2; }
-        .title-container { font-size: 5.5rem; letter-spacing: -2px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; height: 120px; }
-        .typing-wrapper { color: var(--text-primary); font-weight: 200; position: relative; margin-left: 5px; display: inline-block; text-align: left; }
-        .typing-wrapper::after { content: ''; position: absolute; right: -12px; top: 15%; height: 70%; width: 3px; background-color: var(--meta-blue-end); animation: blink 0.8s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--fg-muted);
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .theme-toggle:hover { color: var(--fg); background: var(--bg-soft); }
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle .icon-moon { display: block; }
+    [data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+    [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 
-        .subtitle { font-size: 1.2rem; color: var(--text-secondary); max-width: 600px; margin-bottom: 3.5rem; font-weight: 300; }
-        .btn-container { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-        .btn { padding: 1rem 2.5rem; border-radius: 8px; font-size: 1.1rem; font-weight: 600; text-decoration: none; transition: all 0.3s ease; cursor: pointer; border: none; display: inline-block;}
-        
-        .btn-primary { background: linear-gradient(to right, var(--meta-blue-start), var(--meta-blue-end)); color: white; box-shadow: 0 4px 15px rgba(0, 98, 230, 0.3); }
-        .btn-primary:hover { box-shadow: 0 6px 20px rgba(0, 98, 230, 0.5); transform: translateY(-2px); }
-        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-primary); border: 1px solid var(--border-color); backdrop-filter: blur(5px); }
-        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--meta-blue-start);}
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s;
+      cursor: pointer;
+      font-family: inherit;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--fg);
+      border-color: var(--border);
+    }
+    .btn-secondary:hover { background: var(--bg-soft); border-color: #D8D8D2; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--fg-muted);
+      padding: 8px 0;
+    }
+    .btn-ghost:hover { color: var(--fg); }
+    .btn-large { padding: 14px 24px; font-size: 15px; }
 
-        /* GitHub Temalı Buton - Temaya Göre Değişen */
-        .btn-github {
-            background-color: #24292e;
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-        }
-        .btn-github:hover { background-color: #2f363d; transform: translateY(-2px); }
-        body.light-theme .btn-github { background-color: #ffffff; color: #24292e; border: 1px solid #d1d5da; }
-        body.light-theme .btn-github:hover { background-color: #f6f8fa; }
-        .github-icon { fill: currentColor; }
+    /* ===== HERO ===== */
+    .hero {
+      padding: 96px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+      background-size: 56px 56px;
+      background-position: 50% 0;
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 0%, transparent 80%);
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 0%, transparent 80%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -240px;
+      right: -180px;
+      width: 720px;
+      height: 720px;
+      background: radial-gradient(circle, rgba(24, 119, 242, 0.12) 0%, rgba(24, 119, 242, 0.04) 35%, rgba(24, 119, 242, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(8px);
+    }
+    .hero > .container { position: relative; z-index: 1; }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--fg-muted);
+      background: var(--bg-soft);
+      border: 1px solid var(--border-soft);
+      padding: 5px 12px;
+      border-radius: 999px;
+      margin-bottom: 28px;
+      font-weight: 500;
+    }
+    .hero-eyebrow .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--safe);
+      border-radius: 50%;
+    }
+    h1.hero-title {
+      font-family: 'Geist', sans-serif;
+      font-size: clamp(40px, 5.5vw, 68px);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+      font-weight: 600;
+      max-width: 920px;
+      margin-bottom: 28px;
+    }
+    h1.hero-title em {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.005em;
+      font-variation-settings: 'SOFT' 50, 'opsz' 144;
+    }
+    .hero-sub {
+      font-size: 19px;
+      line-height: 1.55;
+      color: var(--fg-muted);
+      max-width: 620px;
+      margin-bottom: 40px;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .hero-meta {
+      margin-top: 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 13px;
+      color: var(--fg-subtle);
+      flex-wrap: wrap;
+    }
+    .hero-meta-item { display: inline-flex; align-items: center; gap: 6px; }
 
-        .credit-text { font-size: 0.9rem; color: var(--text-secondary); font-weight: 300; opacity: 0.8; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; }
-        .credit-text span { color: var(--meta-blue-end); font-weight: 600; }
+    /* ===== Screenshot frame ===== */
+    .screenshot-wrap {
+      margin-top: 88px;
+      position: relative;
+      max-width: 920px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .screenshot-wrap::before {
+      content: '';
+      position: absolute;
+      top: 8%;
+      left: 8%;
+      right: 8%;
+      bottom: -6%;
+      background: radial-gradient(ellipse at 50% 50%, rgba(24, 119, 242, 0.22) 0%, rgba(24, 119, 242, 0.06) 40%, rgba(24, 119, 242, 0) 70%);
+      filter: blur(48px);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .screenshot-frame {
+      position: relative;
+      z-index: 1;
+      background: var(--frame-bg);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 0;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(15, 20, 25, 0.03),
+        var(--shadow-soft),
+        var(--shadow-mid),
+        var(--shadow-deep);
+    }
+    .screenshot-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 16px;
+      background: linear-gradient(to bottom, var(--bar-from), var(--bar-to));
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .screenshot-bar-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .screenshot-bar-dot.r { background: #FF5F57; box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.06); }
+    .screenshot-bar-dot.y { background: #FEBC2E; box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.06); }
+    .screenshot-bar-dot.g { background: #28C840; box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.06); }
+    .screenshot-bar-title {
+      margin: 0 auto;
+      padding-right: 40px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--fg-subtle);
+      letter-spacing: 0.02em;
+      font-weight: 500;
+    }
+    .screenshot-frame img {
+      display: block;
+      width: 100%;
+      border-radius: 0;
+      border: 0;
+    }
 
-        /* BİLGİ KARTLARI */
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; max-width: 1100px; margin: 0 auto 5rem auto; padding: 0 2rem; position: relative; z-index: 2; }
-        .feature-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 2.5rem 2rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; text-align: left; }
-        .feature-card:hover { transform: translateY(-5px); border-color: rgba(51, 174, 255, 0.4); box-shadow: 0 10px 30px var(--shadow-color); }
-        .feature-icon-wrapper { display: inline-flex; align-items: center; justify-content: center; width: 55px; height: 55px; border-radius: 12px; background: rgba(0, 98, 230, 0.1); color: var(--meta-blue-end); margin-bottom: 1.5rem; border: 1px solid rgba(0, 98, 230, 0.2); transition: all 0.3s ease; }
-        .feature-card:hover .feature-icon-wrapper { background: rgba(0, 98, 230, 0.2); transform: scale(1.05); }
-        .feature-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary); }
-        .feature-text { font-size: 0.9rem; color: var(--text-secondary); font-weight: 300; line-height: 1.6; }
+    /* ===== Section ===== */
+    section { padding: 96px 0; border-top: 1px solid var(--border-soft); }
+    .section-soft { background: var(--bg-section); }
 
-        /* UYGULAMA ARAYÜZÜ VİTRİNİ & GÜNCELLEMELER */
-        .content-section { padding: 2rem 2rem 2rem 2rem; max-width: 1000px; margin: 0 auto; position: relative; z-index: 2; }
-        .app-showcase { width: 100%; border-radius: 12px; border: 2px solid var(--meta-blue-start); box-shadow: 0 20px 60px var(--shadow-color), 0 0 50px rgba(0, 98, 230, 0.25); overflow: hidden; margin-bottom: 4rem; background-color: var(--surface-color); position: relative; }
-        .app-image { width: 100%; height: auto; display: block; transition: transform 0.4s ease; }
-        .app-showcase:hover .app-image { transform: scale(1.02); }
+    .section-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: clamp(32px, 3.6vw, 46px);
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      font-weight: 600;
+      max-width: 720px;
+      margin-bottom: 24px;
+    }
+    .section-title em {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-variation-settings: 'SOFT' 50, 'opsz' 144;
+    }
+    .section-lead {
+      font-size: 18px;
+      color: var(--fg-muted);
+      max-width: 640px;
+      line-height: 1.55;
+    }
 
-        .update-notes { background: var(--surface-color); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 12px; padding: 2.5rem; text-align: left; }
-        .update-notes h2 { font-size: 1.8rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--text-primary);}
-        .update-list { list-style: none; margin-bottom: 2rem; }
-        .update-list li { margin-bottom: 1rem; color: var(--text-secondary); display: flex; align-items: flex-start; gap: 10px; font-weight: 300; }
-        .update-list li::before { content: '✓'; color: var(--meta-blue-end); font-weight: bold; margin-right: 5px; }
+    /* ===== Why section: editorial prose ===== */
+    .why-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      margin-top: 56px;
+      align-items: start;
+    }
+    .why-prose p {
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--fg);
+      margin-bottom: 20px;
+    }
+    .why-prose p:last-child { margin-bottom: 0; }
+    .why-prose .pull {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 26px;
+      line-height: 1.3;
+      color: var(--fg);
+      padding-left: 20px;
+      border-left: 2px solid var(--accent);
+      margin: 32px 0;
+      font-weight: 400;
+      font-variation-settings: 'SOFT' 50, 'opsz' 144;
+    }
+    .why-stat-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .why-stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-soft);
+      font-size: 14px;
+    }
+    .why-stat-row:last-child { border-bottom: 0; padding-bottom: 0; }
+    .why-stat-row:first-child { padding-top: 0; }
+    .why-stat-label { color: var(--fg-muted); }
+    .why-stat-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--fg);
+      font-weight: 500;
+    }
+    .why-stat-val.critical { color: var(--critical); }
+    .why-stat-val.safe { color: var(--safe); }
+    .why-stat-title {
+      font-size: 13px;
+      color: var(--fg-subtle);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 500;
+    }
 
-        .disclaimer-box { background-color: rgba(231, 76, 60, 0.08); border-left: 4px solid #E74C3C; padding: 1.5rem; border-radius: 0 8px 8px 0; margin-top: 1.5rem;}
-        .disclaimer-box h4 { color: #E74C3C; margin-bottom: 0.5rem; }
-        .disclaimer-box p { color: var(--text-secondary); font-size: 0.9rem; font-weight: 300; }
+    /* ===== How it works ===== */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border-soft);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 56px;
+    }
+    .step {
+      background: var(--bg);
+      padding: 36px 32px;
+    }
+    .step-num {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 38px;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 20px;
+      font-weight: 400;
+      font-variation-settings: 'SOFT' 50, 'opsz' 144;
+    }
+    .step h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+    .step p {
+      font-size: 15px;
+      color: var(--fg-muted);
+      line-height: 1.55;
+    }
 
-        /* YENİ SAYFALAR İÇİN ÖZEL STİLLER */
-        .page-header { text-align: center; margin-bottom: 3rem; }
-        .page-header h1 { font-size: 3rem; color: var(--text-primary); margin-bottom: 1rem; font-weight: 800; letter-spacing: -1px;}
-        .page-header p { color: var(--text-secondary); font-size: 1.1rem; max-width: 600px; margin: 0 auto; font-weight: 300;}
-        .dl-warning-box { background: rgba(243, 156, 18, 0.1); border: 1px solid rgba(243, 156, 18, 0.3); color: #e67e22; padding: 1.5rem; border-radius: 8px; font-size: 0.95rem; text-align: left; margin: 2rem 0; line-height: 1.6;}
+    /* ===== Features ===== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 48px 64px;
+      margin-top: 64px;
+    }
+    .feature h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .feature h3::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .feature p {
+      font-size: 15px;
+      color: var(--fg-muted);
+      line-height: 1.6;
+    }
+    .feature p code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: var(--bg-soft);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: var(--fg);
+      border: 1px solid var(--border-soft);
+    }
 
-        /* FOOTER */
-        .site-footer { text-align: center; padding: 4rem 2rem 3rem 2rem; border-top: 1px solid var(--border-color); margin-top: 4rem; position: relative; z-index: 2; background: rgba(0,0,0,0.2); }
-        .lang-note { font-size: 0.85rem; color: var(--text-secondary); max-width: 650px; margin: 0 auto 2rem auto; line-height: 1.6; font-weight: 300; opacity: 0.7; }
-        .footer-links a { color: var(--text-primary); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.3s; cursor: pointer; }
-        .footer-links a:hover { color: var(--meta-blue-end); }
+    /* ===== Download ===== */
+    .download-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px;
+      margin-top: 56px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 48px;
+      align-items: center;
+    }
+    .download-info h3 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      margin-bottom: 6px;
+    }
+    .download-info p {
+      font-size: 15px;
+      color: var(--fg-muted);
+    }
+    .download-meta {
+      display: flex;
+      gap: 24px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .download-meta-item {
+      font-size: 13px;
+      color: var(--fg-subtle);
+    }
+    .download-meta-item strong {
+      color: var(--fg);
+      font-weight: 500;
+    }
+    .download-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 200px;
+    }
 
-        /* MODAL */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-content { background-color: var(--modal-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 3rem; width: 90%; max-width: 700px; position: relative; transform: translateY(20px); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); text-align: left; max-height: 85vh; overflow-y: auto; }
-        .modal-overlay.active .modal-content { transform: translateY(0); }
-        .modal-close { position: absolute; top: 1rem; right: 1.5rem; font-size: 2rem; color: var(--text-secondary); cursor: pointer; transition: color 0.2s; }
-        .modal-close:hover { color: var(--text-primary); }
-        .modal-content h3 { color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 0.5rem; }
-        .modal-content p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1rem; line-height: 1.6; font-weight: 300;}
-        .modal-content::-webkit-scrollbar { width: 8px; }
-        .modal-content::-webkit-scrollbar-track { background: transparent; }
-        .modal-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
-        
-        .modal-center { text-align: center; }
+    .disclaimer {
+      margin-top: 32px;
+      padding: 20px 24px;
+      background: var(--bg-soft);
+      border: 1px solid var(--border-soft);
+      border-left: 3px solid var(--critical);
+      border-radius: 0 6px 6px 0;
+    }
+    .disclaimer strong { color: var(--fg); font-weight: 600; }
+    .disclaimer p { font-size: 14px; color: var(--fg-muted); line-height: 1.55; }
 
-        @media (max-width: 850px) {
-            .glass-nav { padding: 1rem; }
-            .title-container { font-size: 3.5rem; flex-direction: column; height: auto; }
-            .typing-wrapper { margin-top: 10px; margin-left: 0; }
-            .btn-container { flex-direction: column; width: 100%; max-width: 300px; }
-            .nav-links { display: none; }
-            .modal-content { padding: 2rem; }
-        }
-    </style>
+    /* ===== Footer ===== */
+    footer {
+      border-top: 1px solid var(--border-soft);
+      padding: 48px 0 56px;
+      margin-top: 0;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+    .footer-brand {
+      max-width: 300px;
+    }
+    .footer-brand .logo { margin-bottom: 12px; }
+    .footer-brand p {
+      font-size: 13px;
+      color: var(--fg-subtle);
+      line-height: 1.6;
+    }
+    .footer-cols {
+      display: flex;
+      gap: 64px;
+      flex-wrap: wrap;
+    }
+    .footer-col h4 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--fg-subtle);
+      margin-bottom: 14px;
+    }
+    .footer-col a {
+      display: block;
+      font-size: 14px;
+      color: var(--fg-muted);
+      padding: 5px 0;
+      transition: color 0.15s;
+    }
+    .footer-col a:hover { color: var(--fg); }
+    .footer-bottom {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--fg-subtle);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-bottom-links {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .footer-bottom-links a {
+      color: var(--fg-muted);
+      transition: color 0.15s;
+      cursor: pointer;
+    }
+    .footer-bottom-links a:hover { color: var(--fg); }
+    .dot-sep { color: var(--fg-subtle); opacity: 0.5; }
+
+    /* ===== FAQ ===== */
+    .faq-list {
+      margin-top: 56px;
+      max-width: 820px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .faq-item {
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .faq-item:last-child { border-bottom: 0; }
+    .faq-item summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 22px 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: -0.005em;
+      color: var(--fg);
+      transition: color 0.15s;
+      user-select: none;
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::marker { display: none; content: ''; }
+    .faq-item summary:hover { color: var(--accent); }
+    .faq-q { flex: 1; min-width: 0; }
+    .faq-icon {
+      width: 18px;
+      height: 18px;
+      color: var(--fg-subtle);
+      transition: transform 0.25s ease, color 0.15s;
+      flex-shrink: 0;
+    }
+    .faq-item[open] .faq-icon {
+      transform: rotate(45deg);
+      color: var(--accent);
+    }
+    .faq-item[open] summary { color: var(--fg); }
+    .faq-answer {
+      padding: 0 4px 24px;
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--fg-muted);
+      max-width: 720px;
+    }
+    .faq-answer p { margin-bottom: 12px; }
+    .faq-answer p:last-child { margin-bottom: 0; }
+    .faq-answer code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: var(--code-bg);
+      padding: 1px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-soft);
+      color: var(--fg);
+    }
+    .faq-answer .link {
+      color: var(--accent);
+      transition: color 0.15s;
+    }
+    .faq-answer .link:hover { color: var(--accent-hover); }
+    .faq-answer strong { color: var(--fg); font-weight: 600; }
+    .faq-item[open] .faq-answer {
+      animation: faqReveal 0.25s ease both;
+    }
+    @keyframes faqReveal {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Privacy modal ===== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 20, 25, 0.55);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      transition: opacity 0.18s ease;
+    }
+    [data-theme="dark"] .modal-backdrop {
+      background: rgba(0, 0, 0, 0.65);
+    }
+    .modal-backdrop.open {
+      display: flex;
+      opacity: 1;
+    }
+    .modal {
+      position: relative;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      max-width: 640px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-deep);
+      transform: translateY(8px);
+      transition: transform 0.2s ease;
+    }
+    .modal-backdrop.open .modal { transform: translateY(0); }
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 30px;
+      height: 30px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--fg-muted);
+      transition: all 0.15s;
+      z-index: 1;
+    }
+    .modal-close:hover { background: var(--bg-soft); color: var(--fg); }
+    .modal-body { padding: 40px 44px 36px; }
+    .modal-body h2 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      margin-bottom: 28px;
+    }
+    .modal-body h3 {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--fg-subtle);
+      margin: 28px 0 10px;
+    }
+    .modal-body h3:first-of-type { margin-top: 0; }
+    .modal-body p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--fg);
+      margin-bottom: 12px;
+    }
+    .modal-body p.muted { color: var(--fg-muted); font-size: 14px; }
+    .modal-body code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: var(--code-bg);
+      padding: 1px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-soft);
+    }
+    .modal-body .link {
+      color: var(--accent);
+      transition: color 0.15s;
+    }
+    .modal-body .link:hover { color: var(--accent-hover); }
+    @media (max-width: 520px) {
+      .modal-body { padding: 32px 24px 24px; }
+      .modal-body h2 { font-size: 20px; }
+    }
+
+    /* ===== Inline icon (arrow) ===== */
+    .arrow {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 860px) {
+      .nav-links { display: none; }
+      .container { padding: 0 24px; }
+      .nav-inner { padding: 0 24px; }
+      .hero { padding: 64px 0 56px; }
+      section { padding: 72px 0; }
+      .why-grid { grid-template-columns: 1fr; gap: 48px; }
+      .steps { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; gap: 32px; }
+      .download-card { grid-template-columns: 1fr; padding: 32px; gap: 28px; }
+      .download-actions { min-width: 0; }
+      .footer-inner { flex-direction: column; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ===== Subtle entrance ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero > * { animation: fadeUp 0.6s ease both; }
+    .hero-eyebrow { animation-delay: 0s; }
+    h1.hero-title { animation-delay: 0.05s; }
+    .hero-sub { animation-delay: 0.1s; }
+    .hero-actions { animation-delay: 0.15s; }
+    .hero-meta { animation-delay: 0.2s; }
+
+    /* hide untranslated */
+    [data-tr], [data-en] { display: inline; }
+    body[data-lang="tr"] [data-en], body[data-lang="en"] [data-tr] { display: none; }
+    body[data-lang="tr"] [data-en-block], body[data-lang="en"] [data-tr-block] { display: none !important; }
+  </style>
 </head>
-<body>
+<body data-lang="tr">
 
-    <div class="bg-shapes">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-    </div>
-
-    <nav class="glass-nav">
-        <a onclick="navigateTo('page-home')" class="nav-brand">
-            <div class="nav-logo-text">
-                <span class="code-bracket">&lt;/</span>
-                <span class="hyper-word">Hyper</span>
-                <span class="zero-word">zero</span>
-                <span class="code-bracket">/&gt;</span>
-            </div>
+  <nav id="nav">
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <span class="logo-mark">H</span>
+        HyperZero
+      </a>
+      <div class="nav-links">
+        <a href="#why" data-tr>Neden</a><a href="#why" data-en>Why</a>
+        <a href="#how" data-tr>Nasıl çalışır</a><a href="#how" data-en>How it works</a>
+        <a href="#features" data-tr>Özellikler</a><a href="#features" data-en>Features</a>
+        <a href="#download" data-tr>İndir</a><a href="#download" data-en>Download</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" title="Tema değiştir">
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="lang-toggle">
+          <button onclick="setLang('tr')" id="btn-tr" class="active">TR</button>
+          <button onclick="setLang('en')" id="btn-en">EN</button>
+        </div>
+        <a href="https://github.com/HyperZeroDev/HyperZero" target="_blank" rel="noopener" class="btn btn-secondary">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
         </a>
-        <div class="nav-links">
-            <div class="nav-controls">
-                <button class="theme-btn" id="themeToggle" title="Toggle Theme">🌙</button>
-                <select class="lang-select" id="langSelect" title="Select Language">
-                    <option value="en" selected>EN</option>
-                    <option value="tr">TR</option>
-                </select>
-            </div>
-            <a onclick="navigateTo('page-home', 'ozellikler')" data-i18n="nav_feat">Features</a>
-            <a onclick="navigateTo('page-home', 'guncellemeler')" data-i18n="nav_upd">Updates</a>
-            <a onclick="navigateTo('page-about')" data-i18n="nav_why">Why HyperZero?</a>
-            <a onclick="navigateTo('page-download')" class="nav-btn-small" data-i18n="nav_dl">Download Global Edition</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <div class="container">
+      <div class="hero-eyebrow">
+        <span class="dot"></span>
+        <span data-tr>v1.0 Global Edition · Windows için yayında</span>
+        <span data-en>v1.0 Global Edition · Available for Windows</span>
+      </div>
+
+      <h1 class="hero-title">
+        <span data-tr>Sildiğiniz programdan geriye kalan ne varsa, <em>bulun ve gerçekten silin.</em></span>
+        <span data-en>Find what an uninstaller leaves behind, <em>and actually delete it.</em></span>
+      </h1>
+
+      <p class="hero-sub">
+        <span data-tr>HyperZero, Windows'tan kaldırdığınız programların geride bıraktığı klasörleri, dosyaları ve registry kayıtlarını tüm disklerinizde tarar. Hangilerini kaldıracağınıza siz karar verirsiniz; HyperZero kalıcı olarak siler.</span>
+        <span data-en>HyperZero scans every disk for the folders, files, and registry entries left behind by uninstalled programs. You decide what stays; HyperZero deletes the rest, for good.</span>
+      </p>
+
+      <div class="hero-actions">
+        <a href="https://github.com/HyperZeroDev/HyperZero/releases/download/v1.0/HyperZero1_Portable.exe" class="btn btn-primary btn-large">
+          <span data-tr>Windows için indir</span><span data-en>Download for Windows</span>
+          <svg class="arrow" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="https://github.com/HyperZeroDev/HyperZero" target="_blank" rel="noopener" class="btn btn-secondary btn-large">
+          <span data-tr>Kaynak kodu</span><span data-en>View source</span>
+        </a>
+      </div>
+
+      <div class="hero-meta">
+        <span class="hero-meta-item">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5L1 5v6l7 3.5L15 11V5L8 1.5zM8 3.13L13.13 5.5 8 7.87 2.87 5.5 8 3.13z"/></svg>
+          <span data-tr>Kurulum gerekmez · Portable</span><span data-en>No install · Portable</span>
+        </span>
+        <span class="hero-meta-item">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 6.5L7 11 4.5 8.5 5.5 7.5 7 9l3.5-3.5 1 1z"/></svg>
+          <span data-tr>MIT lisansı · Açık kaynak</span><span data-en>MIT licensed · Open source</span>
+        </span>
+        <span class="hero-meta-item">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12v2H2zm0 4h12v2H2zm0 4h12v2H2z"/></svg>
+          <span data-tr>29 dil arayüzü</span><span data-en>29 language interfaces</span>
+        </span>
+      </div>
+
+      <div class="screenshot-wrap">
+        <div class="screenshot-frame">
+          <div class="screenshot-bar">
+            <span class="screenshot-bar-dot r"></span>
+            <span class="screenshot-bar-dot y"></span>
+            <span class="screenshot-bar-dot g"></span>
+            <span class="screenshot-bar-title">HyperZero v1.0 — Global Edition</span>
+          </div>
+          <img id="screenshot"
+               src="https://raw.githubusercontent.com/HyperZeroDev/HyperZero/main/app_ui2.png"
+               data-light="https://raw.githubusercontent.com/HyperZeroDev/HyperZero/main/app_ui2.png"
+               data-dark="https://raw.githubusercontent.com/HyperZeroDev/HyperZero/main/app_ui.png"
+               alt="HyperZero arayüz görüntüsü" loading="lazy" />
         </div>
-    </nav>
-
-    <div id="page-home" class="page-view active">
-        <section class="hero">
-            <div class="title-container">
-                <span class="hyper-word">Hyper</span>
-                <span class="typing-wrapper" id="typing-text">&nbsp;</span>
-            </div>
-            <p class="subtitle" data-i18n="hero_sub">A professional system tool designed to root out stubborn app remnants, hidden game files, and registry traces.</p>
-            
-            <div class="btn-container">
-                <button class="btn btn-primary" onclick="navigateTo('page-download')" data-i18n="btn_dl_main">Download Global Edition (Windows)</button>
-                <a href="https://github.com/HyperZeroDev/HyperZero" target="_blank" class="btn btn-secondary" data-i18n="btn_git">View on GitHub</a>
-            </div>
-            
-            <div class="credit-text" data-i18n="credit_text">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: sub; margin-right: 6px; color: var(--meta-blue-end);">
-                    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-                </svg>
-                This application was developed by&nbsp;<span>Gemini</span>&nbsp;via&nbsp;<span>Python</span>.
-            </div>
-        </section>
-
-        <section class="features-grid" id="ozellikler">
-            <div class="feature-card">
-                <div class="feature-icon-wrapper"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
-                <h3 class="feature-title" data-i18n="feat1_title">Aggressive Destruction Engine</h3>
-                <p class="feature-text" data-i18n="feat1_desc">Custom algorithm powered by PowerShell bypasses antivirus locks to forcefully delete and permanently destroy stubborn files.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon-wrapper"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="12" x2="2" y2="12"></line><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path><line x1="6" y1="16" x2="6.01" y2="16"></line><line x1="10" y1="16" x2="10.01" y2="16"></line></svg></div>
-                <h3 class="feature-title" data-i18n="feat2_title">Multi-Disk Scanning</h3>
-                <p class="feature-text" data-i18n="feat2_desc">Scans not just the C: drive, but simultaneously checks Steam and Epic Games libraries across all connected drives like D: and E:.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon-wrapper"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
-                <h3 class="feature-title" data-i18n="feat3_title">Open Source & Reliable</h3>
-                <p class="feature-text" data-i18n="feat3_desc">Know exactly what runs in the background thanks to its fully open-source structure. Offers 100% transparent and reliable system cleaning.</p>
-            </div>
-        </section>
-
-        <section class="content-section">
-            <div class="app-showcase">
-                <img src="app_ui.png" id="mainAppImage" alt="HyperZero Interface" class="app-image">
-            </div>
-
-            <div class="update-notes" id="guncellemeler">
-                <h2 data-i18n="upd_title">v1.0 Update Notes</h2>
-                <ul class="update-list" id="updateList">
-                    <li>PowerShell-powered aggressive destruction engine integrated.</li>
-                    <li>Automatic system language detection (29 different language support) added.</li>
-                    <li>Independent Steam/Epic Games scanning module developed for D: and E: drives.</li>
-                    <li>Dark and Light theme interface transitions smoothed.</li>
-                </ul>
-            </div>
-        </section>
+      </div>
     </div>
+  </header>
 
-    <div id="page-download" class="page-view">
-        <section class="hero" style="min-height: 70vh; padding-top: 10rem;">
-            <div class="page-header">
-                <h1>Global Edition <span class="hyper-word">v1.0</span></h1>
-                <p data-i18n="dl_sub">Ready to say goodbye to all the junk files slowing down your system. Review the features and start the installation.</p>
-            </div>
+  <!-- ===== WHY ===== -->
+  <section id="why" class="section-soft">
+    <div class="container">
+      <div class="section-label" data-tr>Neden gerek var</div>
+      <div class="section-label" data-en-block style="display:none">Why it exists</div>
 
-            <div class="content-section" style="padding-top: 0; text-align: left;">
-                <div class="update-notes" style="background: transparent; border: none; padding: 0;">
-                    <ul class="update-list" id="dlList" style="max-width: 600px; margin: 0 auto 2rem auto;">
-                        <li><strong>Portable Operation:</strong> No installation required, runs directly.</li>
-                        <li><strong>Registry Navigation:</strong> Shows faulty registries directly in Regedit.</li>
-                        <li><strong>Security Filter:</strong> Automatically marks critical Windows system files in red to protect them.</li>
-                    </ul>
-                </div>
+      <h2 class="section-title">
+        <span data-tr>Windows bir programı kaldırdığında, <em>işin yarısını yapıyor.</em></span>
+        <span data-en>When Windows uninstalls a program, <em>it only does half the job.</em></span>
+      </h2>
 
-                <div class="dl-warning-box" style="max-width: 800px; margin: 0 auto 3rem auto;" data-i18n="dl_warn">
-                    <strong>⚠️ Important Language Notice:</strong><br><br>
-                    The application's main interface and security tags automatically detect your system's language and adapt (29 language support). <strong>However</strong>, the long update notes and legal disclaimer texts inside the program are provided in <strong>English</strong>, the universal language, to maintain standards.
-                </div>
+      <div class="why-grid">
+        <div class="why-prose">
+          <p data-tr>Standart "Programlar ve Özellikler" aracı bir programı kaldırdığında çoğunlukla yapılandırma klasörleri <code style="font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--bg); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border-soft);">AppData</code> içinde, oyun dosyaları Steam veya Epic Games kütüphanenizde, kayıtlar ise Registry'de olduğu yerde durur.</p>
+          <p data-en>The standard "Programs and Features" tool typically leaves configuration folders sitting in <code style="font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--bg); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border-soft);">AppData</code>, game files in your Steam or Epic Games library, and references in the Registry — all untouched.</p>
 
-                <div class="btn-container" style="flex-direction: column; align-items: center; gap: 0;">
-                    <a href="https://github.com/HyperZeroDev/HyperZero/releases/download/v1.0/HyperZero1_Portable.exe" download class="btn btn-primary" style="font-size: 1.3rem; padding: 1.2rem 4rem; width: 100%; max-width: 400px; text-align: center;" data-i18n="dl_btn_big">Secure Download (.exe)</a>
-                    
-                    <a href="https://github.com/HyperZeroDev/HyperZero" target="_blank" class="btn btn-github" style="width: 100%; max-width: 400px;">
-                        <svg class="github-icon" height="20" width="20" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
-                        Download on GitHub
-                    </a>
-                </div>
-            </div>
-        </section>
+          <div class="pull" data-tr>Yıllar içinde bu kalıntılar yüzlerce gigabaytı geçebilir, ama daha kötüsü görünmez olmalarıdır.</div>
+          <div class="pull" data-en>Over time these remnants can add up to hundreds of gigabytes, but the worse part is that they're invisible.</div>
+
+          <p data-tr>HyperZero'nun yaptığı tek şey: bir program adı verdiğinizde tüm disklerinizi (sadece C:'yi değil, D: ve E:'yi de, Steam ve Epic kütüphanelerini ayrı tarayarak) gezer, bulduğu her şeyi listeler ve silmek istediklerinize sizin onayınızla, kalıcı olarak son verir.</p>
+          <p data-en>What HyperZero does is simple: you give it a program name, and it walks every disk you have — not just C:, but D: and E: too, scanning Steam and Epic libraries separately. It lists everything it finds, and on your confirmation, permanently deletes whatever you want gone.</p>
+        </div>
+
+        <div class="why-stat-box">
+          <div class="why-stat-title" data-tr>Örnek tarama: "<em style="font-family:'Fraunces',serif;font-style:italic">Discord</em>"</div>
+          <div class="why-stat-title" data-en-block style="display:none">Sample scan: "<em style="font-family:'Fraunces',serif;font-style:italic">Discord</em>"</div>
+
+          <div class="why-stat-row">
+            <span class="why-stat-label">📁 AppData\Roaming</span>
+            <span class="why-stat-val safe">412 MB</span>
+          </div>
+          <div class="why-stat-row">
+            <span class="why-stat-label">📁 AppData\Local</span>
+            <span class="why-stat-val safe">187 MB</span>
+          </div>
+          <div class="why-stat-row">
+            <span class="why-stat-label">📁 ProgramData</span>
+            <span class="why-stat-val safe">23 MB</span>
+          </div>
+          <div class="why-stat-row">
+            <span class="why-stat-label">⚙️ HKCU\Software</span>
+            <span class="why-stat-val safe">14 keys</span>
+          </div>
+          <div class="why-stat-row">
+            <span class="why-stat-label">⚙️ HKLM\Software</span>
+            <span class="why-stat-val critical">2 critical</span>
+          </div>
+          <div class="why-stat-row">
+            <span class="why-stat-label" data-tr>Toplam</span>
+            <span class="why-stat-label" data-en>Total</span>
+            <span class="why-stat-val">622 MB · 16 entries</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <div id="page-about" class="page-view">
-        <section class="hero" style="min-height: 70vh; padding-top: 10rem;">
-            <div class="page-header">
-                <h1><span data-i18n="why_title_p1">Why</span> <span class="hyper-word">HyperZero?</span></h1>
-                <p data-i18n="why_sub">A different vision that dives deep into the system, unlike classic uninstallation tools.</p>
-            </div>
+  <!-- ===== HOW IT WORKS ===== -->
+  <section id="how">
+    <div class="container">
+      <div class="section-label" data-tr>Nasıl çalışır</div>
+      <div class="section-label" data-en-block style="display:none">How it works</div>
 
-            <div class="content-section" style="padding-top: 0; text-align: left;">
-                <div class="update-notes" id="whyTexts">
-                    <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Standard Windows "Add/Remove Programs" tool leaves megabytes of temporary files, empty folders, and registry junk behind when deleting apps. This junk slows down your system and occupies storage space over time.</p>
-                    <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">HyperZero searches for those hidden crumbs left behind after deleting a program across all disks (not just C; D, E, external drives) in milliseconds by name.</p>
-                    <p style="margin-bottom: 1.5rem; color: var(--text-primary); font-weight: 600;">It supports analyzing the locations of all files and manually deleting them.</p>
-                    <p style="color: var(--text-secondary);">It triggers the integrated PowerShell destruction engine for stubborn files that cannot be deleted because they are locked or "In Use", and ruthlessly destroys the target. Moreover, it is completely open-source; it leaves no backdoors on your system and does not collect data.</p>
-                    
-                    <div class="btn-container" style="justify-content: flex-start; margin-top: 3rem;">
-                        <button class="btn btn-secondary" onclick="navigateTo('page-home')" data-i18n="btn_home">Return to Home</button>
-                    </div>
-                </div>
-            </div>
-        </section>
+      <h2 class="section-title">
+        <span data-tr>Üç adımda, <em>kontrol sizde.</em></span>
+        <span data-en>Three steps, <em>and you stay in control.</em></span>
+      </h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3 data-tr>Programı normal yoldan kaldırın</h3>
+          <h3 data-en>Uninstall the program normally</h3>
+          <p data-tr>Windows'un kendi "Programlar ve Özellikler" aracını kullanın. HyperZero'nun yan menüsündeki kısayol sizi doğrudan oraya götürür.</p>
+          <p data-en>Use Windows' own "Programs and Features" tool. HyperZero's sidebar shortcut takes you straight there.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3 data-tr>Program adını arayın</h3>
+          <h3 data-en>Search for the program name</h3>
+          <p data-tr>Arama kutusuna programın adını yazıp Enter'a basın. HyperZero tüm disklerinizi ve registry'yi tarar; eşleşen her şeyi listeler.</p>
+          <p data-en>Type the name and hit Enter. HyperZero walks every disk and the registry, listing everything that matches.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3 data-tr>Listeyi gözden geçirin, silin</h3>
+          <h3 data-en>Review the list, then delete</h3>
+          <p data-tr>Sistem dosyaları otomatik olarak kırmızıyla işaretlenir. Çift tıklayarak konumu açabilir, sağ tıklayarak kalıcı silebilirsiniz.</p>
+          <p data-en>System files are automatically flagged in red. Double-click to open the location, right-click to permanently delete.</p>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <footer class="site-footer">
-        <p class="lang-note" data-i18n="footer_note">
-            * HyperZero interface supports 29 languages. To ensure the global compatibility of the application, technical documentation and legal liability warnings are provided in English, the universal language.
+  <!-- ===== FEATURES ===== -->
+  <section id="features" class="section-soft">
+    <div class="container">
+      <div class="section-label" data-tr>Özellikler</div>
+      <div class="section-label" data-en-block style="display:none">Features</div>
+
+      <h2 class="section-title">
+        <span data-tr>Bir araç ne kadar lazımsa, <em>o kadar.</em></span>
+        <span data-en>As much tool as you need, <em>and no more.</em></span>
+      </h2>
+
+      <p class="section-lead">
+        <span data-tr>Lüzumsuz özellik eklemek yerine, kalıntı temizlemenin gerçek zorluklarını çözmeye odaklandık.</span>
+        <span data-en>Instead of piling on features, the focus is on solving the actual hard parts of remnant cleanup.</span>
+      </p>
+
+      <div class="features-grid">
+        <div class="feature">
+          <h3 data-tr>Çok diskli arama</h3>
+          <h3 data-en>Multi-disk search</h3>
+          <p data-tr>Sadece <code>C:</code>'yi değil, sistemdeki her sürücüyü tarar. Steam ve Epic Games kütüphaneleri ayrı taranır — oyun yüklediğiniz disk farklı olsa bile.</p>
+          <p data-en>Walks every drive on the system, not just <code>C:</code>. Steam and Epic Games libraries are scanned separately — even if your games live on a different disk.</p>
+        </div>
+
+        <div class="feature">
+          <h3 data-tr>Sistem dosyası koruması</h3>
+          <h3 data-en>System file protection</h3>
+          <p data-tr><code>Windows</code>, <code>System32</code>, <code>drivers</code> gibi dizinlerdeki eşleşmeler otomatik olarak <strong style="color:var(--critical)">kırmızı (Kritik)</strong> ile işaretlenir. Yanlışlıkla silmek zorlaşır.</p>
+          <p data-en>Matches inside <code>Windows</code>, <code>System32</code>, <code>drivers</code> are automatically flagged <strong style="color:var(--critical)">red (Critical)</strong>. Accidental deletion becomes hard.</p>
+        </div>
+
+        <div class="feature">
+          <h3 data-tr>Registry entegrasyonu</h3>
+          <h3 data-en>Registry integration</h3>
+          <p data-tr>Bir registry kaydına çift tıklayın; HyperZero <code>regedit.exe</code>'i açar ve sizi doğrudan o anahtarın üzerine götürür.</p>
+          <p data-en>Double-click any registry entry; HyperZero opens <code>regedit.exe</code> and takes you straight to the key.</p>
+        </div>
+
+        <div class="feature">
+          <h3 data-tr>Kilitli dosyalar için zorla silme</h3>
+          <h3 data-en>Force-delete for locked files</h3>
+          <p data-tr>"Kullanımda" hatası veren dosyalar için yönetici yetkisiyle <code>del /f /q</code> ve <code>rmdir /s /q</code> komutlarını çalıştırır.</p>
+          <p data-en>For files that report "in use" errors, runs <code>del /f /q</code> and <code>rmdir /s /q</code> with administrator privileges.</p>
+        </div>
+
+        <div class="feature">
+          <h3 data-tr>29 dil arayüzü</h3>
+          <h3 data-en>29 language interfaces</h3>
+          <p data-tr>Sistem diline göre otomatik açılır. Türkçe, İngilizce, Almanca, İspanyolca, Fransızca, Rusça, Çince, Japonca dahil 29 dil.</p>
+          <p data-en>Auto-detects your system language. 29 in total, including Turkish, English, German, Spanish, French, Russian, Chinese, and Japanese.</p>
+        </div>
+
+        <div class="feature">
+          <h3 data-tr>Açık kaynak, MIT</h3>
+          <h3 data-en>Open source, MIT</h3>
+          <p data-tr>Tüm kaynak kod GitHub'da. Reklam, telemetri, veri toplama yok. <code>main.py</code>'yi kendiniz okuyabilirsiniz; tek dosya, ~570 satır.</p>
+          <p data-en>All source on GitHub. No ads, no telemetry, no data collection. You can read <code>main.py</code> yourself — single file, ~570 lines.</p>
+        </div>
+
+        <div class="feature">
+          <h3 data-tr>Portable çalışma</h3>
+          <h3 data-en>Portable</h3>
+          <p data-tr>Kurulum yok. <code>.exe</code>'yi indirip çalıştırın. USB'de taşıyabilir, kullandıktan sonra silebilirsiniz.</p>
+          <p data-en>No install. Download the <code>.exe</code> and run it. Carry it on a USB stick, delete it when done.</p>
+        </div>
+
+        <div class="feature">
+          <h3 data-tr>Aydınlık & karanlık tema</h3>
+          <h3 data-en>Light & dark themes</h3>
+          <p data-tr>Ayarlar menüsünden geçiş yapın. Modern Windows uygulamalarıyla aynı düzgünlükte çalışır.</p>
+          <p data-en>Switch from settings. Behaves like any modern Windows app.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DOWNLOAD ===== -->
+  <section id="download">
+    <div class="container">
+      <div class="section-label" data-tr>İndir</div>
+      <div class="section-label" data-en-block style="display:none">Download</div>
+
+      <h2 class="section-title">
+        <span data-tr>Hazır olduğunuzda <em>başlayın.</em></span>
+        <span data-en>Start <em>when you're ready.</em></span>
+      </h2>
+
+      <p class="section-lead">
+        <span data-tr>Windows 10 ve 11 için. Yönetici yetkisi gerektirir (zorla silme için). İlk açılışta arayüz dilinizi otomatik seçer.</span>
+        <span data-en>For Windows 10 and 11. Administrator privileges required (for force-delete). Picks your language automatically on first launch.</span>
+      </p>
+
+      <div class="download-card">
+        <div class="download-info">
+          <h3>HyperZero v1.0 — Global Edition</h3>
+          <p data-tr>Tek <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.exe</code> dosyası. 29 dil arayüzü dahil.</p>
+          <p data-en>Single <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.exe</code> file. 29 language interfaces included.</p>
+          <div class="download-meta">
+            <span class="download-meta-item"><strong>Windows 10 / 11</strong></span>
+            <span class="download-meta-item">·</span>
+            <span class="download-meta-item"><strong>x64</strong></span>
+            <span class="download-meta-item">·</span>
+            <span class="download-meta-item"><strong>Portable</strong></span>
+          </div>
+        </div>
+
+        <div class="download-actions">
+          <a href="https://github.com/HyperZeroDev/HyperZero/releases/download/v1.0/HyperZero1_Portable.exe" class="btn btn-primary btn-large" style="justify-content:center">
+            <span data-tr>.exe indir</span><span data-en>Download .exe</span>
+          </a>
+          <a href="https://github.com/HyperZeroDev/HyperZero/releases" target="_blank" rel="noopener" class="btn btn-secondary" style="justify-content:center">
+            <span data-tr>Tüm sürümler</span><span data-en>All releases</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        <p>
+          <strong data-tr>Önemli:</strong>
+          <strong data-en>Important:</strong>
+          <span data-tr> HyperZero dosyaları geri dönüşüm kutusuna göndermez — kalıcı olarak siler. Geri alma yoktur. Yanlış bir sistem dosyasının silinmesinden doğan veri kaybından geliştirici sorumlu tutulamaz; tüm risk kullanıcıya aittir. Şüphe duyduğunuzda silmeyin.</span>
+          <span data-en> HyperZero does not send files to the Recycle Bin — deletions are permanent. There is no undo. The developer is not responsible for data loss caused by deleting the wrong system file; all risk is on the user. When in doubt, don't delete.</span>
         </p>
-        <div class="footer-links">
-            <a onclick="openModal('legalModal')" data-i18n="footer_link">Privacy Policy & Contact</a>
-        </div>
-    </footer>
-
-    <div id="downloadModal" class="modal-overlay" onclick="closeModalOutside(event, 'downloadModal')">
-        <div class="modal-content modal-center">
-            <span class="modal-close" onclick="closeModal('downloadModal')">&times;</span>
-            <div class="feature-icon-wrapper" style="margin-bottom: 1rem; width: 60px; height: 60px; margin-left: auto; margin-right: auto;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            </div>
-            <h2 class="modal-title">HyperZero v1.0</h2>
-            <p class="modal-text" data-i18n="modal_dl_sub">Please consider the warning below before downloading the application.</p>
-            
-            <div class="dl-warning-box" style="margin-bottom: 2rem;" data-i18n="modal_dl_warn">
-                <strong>⚠️ Important Language Notice:</strong><br><br>
-                The application's main interface and security tags automatically detect your system's language and adapt (29 language support). <strong>However</strong>, the long update notes and legal disclaimer texts inside the program are provided in <strong>English</strong>, the universal language, to maintain standards.
-            </div>
-            
-            <div style="display: flex; flex-direction: column; gap: 0;">
-                <a href="https://github.com/HyperZeroDev/HyperZero/releases/download/v1.0/HyperZero1_Portable.exe" download class="btn btn-primary" style="display: inline-block; width: 100%; text-align: center;" data-i18n="modal_dl_btn">Download for Windows (.exe)</a>
-                
-                <a href="https://github.com/HyperZeroDev/HyperZero" target="_blank" class="btn btn-github">
-                    <svg class="github-icon" height="20" width="20" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
-                    Download on GitHub
-                </a>
-            </div>
-        </div>
+      </div>
     </div>
+  </section>
 
-    <div id="legalModal" class="modal-overlay" onclick="closeModalOutside(event, 'legalModal')">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal('legalModal')">&times;</span>
-            
-            <h2 style="font-size: 1.8rem; color: var(--text-primary); margin-bottom: 0.5rem;" data-i18n="mod_contact_title">Contact</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 1rem;"><span data-i18n="mod_contact_text">You can reach me directly for any questions, bug reports, or contributions:</span><br>
-            <a href="mailto:hyperzerodev@protonmail.com" style="color: var(--meta-blue-end); text-decoration: none; font-weight: 600; font-size: 1.1rem; display: inline-block; margin-top: 0.5rem;">hyperzerodev@protonmail.com</a></p>
-            
-            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 2rem 0;">
-            
-            <h2 style="font-size: 1.8rem; color: var(--text-primary); margin-bottom: 1rem;" data-i18n="mod_legal_title">Privacy Policy & License</h2>
-            
-            <div id="legalTexts">
-                <h3>1. Open Source and Educational Vision</h3>
-                <p>HyperZero is a 100% open-source and ad-free project developed entirely for educational purposes. It does not aim for commercial profit. It does not perform hidden data analysis in the background, does not collect your personal data, and does not exchange external data with any server.</p>
-                
-                <h3>2. Irreversible Operations Warning</h3>
-                <p>This software uses special privileges to bypass stubborn files. It permanently destroys system files physically, without sending them to the recycle bin. It is not possible to undo the deletion processes performed.</p>
+  <!-- ===== FAQ ===== -->
+  <section id="faq" class="section-soft">
+    <div class="container">
+      <div class="section-label" data-tr>Sıkça sorulanlar</div>
+      <div class="section-label" data-en-block style="display:none">Frequently asked</div>
 
-                <div class="disclaimer-box" style="margin: 1.5rem 0; padding: 1.2rem;">
-                    <h4 style="color: #E74C3C; margin-bottom: 0.5rem;">⚠️ Liability Disclaimer</h4>
-                    <p>The developer (HyperZero Dev) <strong>CANNOT be held responsible</strong> for any data loss, operating system malfunctions, hardware issues, or legal problems that may arise from using the application. Deleting a wrong system file is directly the user's responsibility. By downloading, you are deemed to have fully accepted these risks.</p>
-                </div>
+      <h2 class="section-title">
+        <span data-tr>İndirmeden önce, <em>bilmek isteyebileceğiniz şeyler.</em></span>
+        <span data-en>A few things <em>worth knowing first.</em></span>
+      </h2>
 
-                <h3>3. Software License</h3>
-                <p>HyperZero is distributed under the <strong>MIT License</strong>, supporting the free spirit of the open-source world. You can examine, modify, and use the codes in your own projects.</p>
-                
-                <p style="margin-top: 1.5rem; font-weight: 600; color: var(--text-primary);">
-                    Source Code: <a href="https://github.com/HyperZeroDev/HyperZero" target="_blank" style="color: var(--meta-blue-end); text-decoration: none; font-weight: 400;">[https://github.com/HyperZeroDev/HyperZero?tab=MIT-1-ov-file]</a>
-                </p>
-            </div>
-        </div>
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary>
+            <span class="faq-q">
+              <span data-tr>Antivirüsüm uyarı veriyor — bu bir virüs mü?</span>
+              <span data-en>My antivirus is flagging it — is this a virus?</span>
+            </span>
+            <svg class="faq-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M8 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </summary>
+          <div class="faq-answer">
+            <p data-tr>Hayır. Kalıcı silme yapan ve registry'ye yazan araçlar bazen antivirüsler tarafından "şüpheli davranış" olarak işaretlenir — çünkü teknik olarak aynı işlemler kötü amaçlı yazılımda da geçer. Bu yaygın bir yanlış-pozitif (false positive) durumudur.</p>
+            <p data-tr>Kaynak kodun tamamı GitHub'da. Şüpheniz varsa <a href="https://github.com/HyperZeroDev/HyperZero/blob/main/main.py" target="_blank" rel="noopener" class="link">main.py</a>'yi kendiniz okuyun, ya da <code>.exe</code>'yi sıfırdan derleyin.</p>
+            <p data-en>No. Tools that permanently delete files and write to the registry sometimes get flagged as "suspicious" — technically the same operations exist in malware too. This is a common false positive.</p>
+            <p data-en>The full source is on GitHub. If you're worried, read <a href="https://github.com/HyperZeroDev/HyperZero/blob/main/main.py" target="_blank" rel="noopener" class="link">main.py</a> yourself, or rebuild the <code>.exe</code> from source.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span class="faq-q">
+              <span data-tr>Yanlışlıkla bir sistem dosyası silersem ne olur?</span>
+              <span data-en>What if I accidentally delete a system file?</span>
+            </span>
+            <svg class="faq-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M8 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </summary>
+          <div class="faq-answer">
+            <p data-tr>Geri dönüş yoktur. HyperZero dosyaları geri dönüşüm kutusuna göndermez; doğrudan disk üzerinden siler. Bu yüzden <code>Windows\\</code>, <code>System32\\</code>, <code>drivers\\</code> dizinlerindeki eşleşmeler arayüzde otomatik olarak <strong style="color:var(--critical)">Kritik</strong> olarak işaretlenir.</p>
+            <p data-tr>Kural basit: ne yaptığınızdan emin değilseniz dokunmayın. İki gereksiz dosyayı bırakmak, bir sistem dosyasını silmekten her zaman daha iyidir.</p>
+            <p data-en>There is no undo. HyperZero does not send files to the Recycle Bin; it deletes them directly. That's why matches inside <code>Windows\\</code>, <code>System32\\</code>, and <code>drivers\\</code> are automatically flagged <strong style="color:var(--critical)">Critical</strong>.</p>
+            <p data-en>The rule is simple: if you're not sure what it does, don't touch it. Leaving two unnecessary files behind is always better than deleting one system file.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span class="faq-q">
+              <span data-tr>Neden yönetici olarak çalıştırmam gerekiyor?</span>
+              <span data-en>Why does it need to run as administrator?</span>
+            </span>
+            <svg class="faq-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M8 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </summary>
+          <div class="faq-answer">
+            <p data-tr>Üç sebep: <strong>Registry yazımı</strong> (<code>HKEY_LOCAL_MACHINE</code> altındaki yetim kayıtları silmek), <strong>kilitli dosyaları zorla silme</strong> (kullanımdaki ya da sistem korumalı dosyalar) ve bazı sistem dizinlerine <strong>okuma izni</strong>. Yönetici olmadan çalışır ama sınırlı kalır.</p>
+            <p data-en>Three reasons: <strong>writing to the registry</strong> (deleting orphaned entries under <code>HKEY_LOCAL_MACHINE</code>), <strong>force-deleting locked files</strong> (in-use or system-protected files), and <strong>read access</strong> to some system directories. It runs without admin too, just with reduced capability.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span class="faq-q">
+              <span data-tr>HyperZero verilerimi topluyor mu, telemetri gönderiyor mu?</span>
+              <span data-en>Does HyperZero collect data or send telemetry?</span>
+            </span>
+            <svg class="faq-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M8 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </summary>
+          <div class="faq-answer">
+            <p data-tr>Hayır. Hiçbir analiz, telemetri ya da çerez yok. <code>main.py</code>'de hiçbir <code>requests</code>, <code>urllib</code>, <code>socket</code> ya da ağ çağrısı bulunmaz — kod 570 satır, kendiniz okuyabilirsiniz.</p>
+            <p data-en>No. No analytics, no telemetry, no cookies. <code>main.py</code> contains no <code>requests</code>, <code>urllib</code>, <code>socket</code>, or network calls of any kind — the code is 570 lines, you can read it yourself.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span class="faq-q">
+              <span data-tr>macOS veya Linux sürümü olacak mı?</span>
+              <span data-en>Will there be a macOS or Linux version?</span>
+            </span>
+            <svg class="faq-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M8 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </summary>
+          <div class="faq-answer">
+            <p data-tr>Hayır. HyperZero Windows'a özgü bir sorunu çözüyor: registry, çok-diskli Steam/Epic kurulumları, AppData yapısı. macOS ve Linux'ta uygulama kalıntıları farklı şekilde işler ve farklı araçlar gerektirir.</p>
+            <p data-en>No. HyperZero solves a Windows-specific problem: the registry, multi-disk Steam/Epic installs, AppData semantics. Application remnants behave differently on macOS and Linux and require different tools.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span class="faq-q">
+              <span data-tr>Katkıda bulunabilir miyim?</span>
+              <span data-en>Can I contribute?</span>
+            </span>
+            <svg class="faq-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M8 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </summary>
+          <div class="faq-answer">
+            <p data-tr>Evet. Çeviriler, hata raporları, performans iyileştirmeleri ve yeni özellikler için PR'lar her zaman memnuniyetle karşılanır. <a href="https://github.com/HyperZeroDev/HyperZero" target="_blank" rel="noopener" class="link">GitHub deposunu fork edin</a>, değişikliği yapın, pull request açın.</p>
+            <p data-en>Yes. Translations, bug reports, performance improvements, and new feature PRs are always welcome. <a href="https://github.com/HyperZeroDev/HyperZero" target="_blank" rel="noopener" class="link">Fork the repo</a>, make your change, and open a pull request.</p>
+          </div>
+        </details>
+
+      </div>
     </div>
+  </section>
 
-    <script>
-        // 1. AKILLI SPA NAVİGASYON VE KAYDIRMA (SCROLL)
-        function navigateTo(pageId, targetSectionId = null) {
-            // Önce tüm sayfaları kapat, istenileni aç
-            document.querySelectorAll('.page-view').forEach(page => page.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            
-            if (targetSectionId) {
-                // Sayfa geçişinin render edilmesini bekleyip (100ms) yumuşakça hedefe kaydır
-                setTimeout(() => {
-                    document.getElementById(targetSectionId).scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-            } else {
-                // Sadece sayfa değişiyorsa en üste çık
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a href="#" class="logo">
+            <span class="logo-mark">H</span>
+            HyperZero
+          </a>
+          <p data-tr>Tek geliştirici tarafından sürdürülen, açık kaynak bir Windows aracı. MIT lisansı altında.</p>
+          <p data-en>An open-source Windows utility maintained by a single developer. Released under the MIT license.</p>
+        </div>
 
-        // 2. MODAL İŞLEMLERİ
-        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); document.body.style.overflow = 'hidden'; }
-        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); document.body.style.overflow = 'auto'; }
-        function closeModalOutside(event, modalId) { if (event.target.id === modalId) { closeModal(modalId); } }
+        <div class="footer-cols">
+          <div class="footer-col">
+            <h4 data-tr>Proje</h4>
+            <h4 data-en>Project</h4>
+            <a href="https://github.com/HyperZeroDev/HyperZero" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://github.com/HyperZeroDev/HyperZero/releases" target="_blank" rel="noopener" data-tr>Sürümler</a>
+            <a href="https://github.com/HyperZeroDev/HyperZero/releases" target="_blank" rel="noopener" data-en>Releases</a>
+            <a href="https://github.com/HyperZeroDev/HyperZero/issues" target="_blank" rel="noopener" data-tr>Hata bildirimi</a>
+            <a href="https://github.com/HyperZeroDev/HyperZero/issues" target="_blank" rel="noopener" data-en>Issues</a>
+            <a href="https://github.com/HyperZeroDev/HyperZero/blob/main/LICENSE" target="_blank" rel="noopener" data-tr>MIT lisansı</a>
+            <a href="https://github.com/HyperZeroDev/HyperZero/blob/main/LICENSE" target="_blank" rel="noopener" data-en>MIT license</a>
+          </div>
 
-        // 3. TEMA DEĞİŞTİRİCİ
-        const themeBtn = document.getElementById('themeToggle');
-        const mainAppImage = document.getElementById('mainAppImage');
-        
-        themeBtn.addEventListener('click', () => {
-            document.body.classList.toggle('light-theme');
-            if (document.body.classList.contains('light-theme')) {
-                themeBtn.textContent = '☀️';
-                if(mainAppImage) mainAppImage.src = 'app_ui2.png';
-            } else {
-                themeBtn.textContent = '🌙';
-                if(mainAppImage) mainAppImage.src = 'app_ui.png';
-            }
-        });
+          <div class="footer-col">
+            <h4 data-tr>Bağlantılar</h4>
+            <h4 data-en>Links</h4>
+            <a href="#why" data-tr>Neden gerek var</a>
+            <a href="#why" data-en>Why it exists</a>
+            <a href="#how" data-tr>Nasıl çalışır</a>
+            <a href="#how" data-en>How it works</a>
+            <a href="#features" data-tr>Özellikler</a>
+            <a href="#features" data-en>Features</a>
+            <a href="#download" data-tr>İndir</a>
+            <a href="#download" data-en>Download</a>
+            <a href="#faq" data-tr>SSS</a>
+            <a href="#faq" data-en>FAQ</a>
+          </div>
+        </div>
+      </div>
 
-        // 4. İKİ DİLLİ (EN/TR) ÇEVİRİ MOTORU
-        const translations = {
-            en: {
-                nav_feat: "Features", nav_upd: "Updates", nav_why: "Why HyperZero?", nav_dl: "Download Global Edition",
-                hero_sub: "A professional system tool designed to root out stubborn app remnants, hidden game files, and registry traces.",
-                btn_dl_main: "Download Global Edition (Windows)", btn_git: "View on GitHub",
-                credit_text: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: sub; margin-right: 6px; color: var(--meta-blue-end);"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>This application was developed by&nbsp;<span>Gemini</span>&nbsp;via&nbsp;<span>Python</span>.`,
-                feat1_title: "Aggressive Destruction Engine", feat1_desc: "Custom algorithm powered by PowerShell bypasses antivirus locks to forcefully delete and permanently destroy stubborn files.",
-                feat2_title: "Multi-Disk Scanning", feat2_desc: "Scans not just the C: drive, but simultaneously checks Steam and Epic Games libraries across all connected drives like D: and E:.",
-                feat3_title: "Open Source & Reliable", feat3_desc: "Know exactly what runs in the background thanks to its fully open-source structure. Offers 100% transparent and reliable system cleaning.",
-                upd_title: "v1.0 Update Notes",
-                upd_list: `<li>PowerShell-powered aggressive destruction engine integrated.</li><li>Automatic system language detection (29 different language support) added.</li><li>Independent Steam/Epic Games scanning module developed for D: and E: drives.</li><li>Dark and Light theme interface transitions smoothed.</li>`,
-                dl_sub: "Ready to say goodbye to all the junk files slowing down your system. Review the features and start the installation.",
-                dl_list: `<li><strong>Portable Operation:</strong> No installation required, runs directly.</li><li><strong>Registry Navigation:</strong> Shows faulty registries directly in Regedit.</li><li><strong>Security Filter:</strong> Automatically marks critical Windows system files in red to protect them.</li>`,
-                dl_warn: `<strong>⚠️ Important Language Notice:</strong><br><br>The application's main interface and security tags automatically detect your system's language and adapt (29 language support). <strong>However</strong>, the long update notes and legal disclaimer texts inside the program are provided in <strong>English</strong>, the universal language, to maintain standards.`,
-                dl_btn_big: "Secure Download (.exe)",
-                why_title_p1: "Why", why_sub: "A different vision that dives deep into the system, unlike classic uninstallation tools.",
-                why_texts: `<p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Standard Windows "Add/Remove Programs" tool leaves megabytes of temporary files, empty folders, and registry junk behind when deleting apps. This junk slows down your system and occupies storage space over time.</p><p style="margin-bottom: 1.5rem; color: var(--text-secondary);">HyperZero searches for those hidden crumbs left behind after deleting a program across all disks (not just C; D, E, external drives) in milliseconds by name.</p><p style="margin-bottom: 1.5rem; color: var(--text-primary); font-weight: 600;">It supports analyzing the locations of all files and manually deleting them.</p><p style="color: var(--text-secondary);">It triggers the integrated PowerShell destruction engine for stubborn files that cannot be deleted because they are locked or "In Use", and ruthlessly destroys the target. Moreover, it is completely open-source; it leaves no backdoors on your system and does not collect data.</p><div class="btn-container" style="justify-content: flex-start; margin-top: 3rem;"><button class="btn btn-secondary" onclick="navigateTo('page-home')">Return to Home</button></div>`,
-                footer_note: "* HyperZero interface supports 29 languages. To ensure the global compatibility of the application, technical documentation and legal liability warnings are provided in English, the universal language.",
-                footer_link: "Privacy Policy & Contact",
-                modal_dl_sub: "Please consider the warning below before downloading the application.",
-                modal_dl_warn: `<strong>⚠️ Important Language Notice:</strong><br><br>The application's main interface and security tags automatically detect your system's language and adapt (29 language support). <strong>However</strong>, the long update notes and legal disclaimer texts inside the program are provided in <strong>English</strong>, the universal language, to maintain standards.`,
-                modal_dl_btn: "Download for Windows (.exe)",
-                mod_contact_title: "Contact", mod_contact_text: "You can reach me directly for any questions, bug reports, or contributions:",
-                mod_legal_title: "Privacy Policy & License",
-                mod_legal_texts: `<h3>1. Open Source and Educational Vision</h3><p>HyperZero is a 100% open-source and ad-free project developed entirely for educational purposes. It does not aim for commercial profit. It does not perform hidden data analysis in the background, does not collect your personal data, and does not exchange external data with any server.</p><h3>2. Irreversible Operations Warning</h3><p>This software uses special privileges to bypass stubborn files. It permanently destroys system files physically, without sending them to the recycle bin. It is not possible to undo the deletion processes performed.</p><div class="disclaimer-box" style="margin: 1.5rem 0; padding: 1.2rem;"><h4 style="color: #E74C3C; margin-bottom: 0.5rem;">⚠️ Liability Disclaimer</h4><p>The developer (HyperZero Dev) <strong>CANNOT be held responsible</strong> for any data loss, operating system malfunctions, hardware issues, or legal problems that may arise from using the application. Deleting a wrong system file is directly the user's responsibility. By downloading, you are deemed to have fully accepted these risks.</p></div><h3>3. Software License</h3><p>HyperZero is distributed under the <strong>MIT License</strong>, supporting the free spirit of the open-source world. You can examine, modify, and use the codes in your own projects.</p><p style="margin-top: 1.5rem; font-weight: 600; color: var(--text-primary);">Source Code: <a href="https://github.com/HyperZeroDev/HyperZero" target="_blank" style="color: var(--meta-blue-end); text-decoration: none; font-weight: 400;">[GitHub Link Here]</a></p>`
-            },
-            tr: {
-                nav_feat: "Özellikler", nav_upd: "Güncellemeler", nav_why: "Neden HyperZero?", nav_dl: "İndir Global Edition",
-                hero_sub: "İnatçı uygulama kalıntılarını, gizli oyun dosyalarını ve kayıt defteri izlerini bulup kökünden kazıyan profesyonel sistem aracı.",
-                btn_dl_main: "İndir Global Edition (Windows)", btn_git: "GitHub'da İncele",
-                credit_text: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: sub; margin-right: 6px; color: var(--meta-blue-end);"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>Bu uygulama&nbsp;<span>Gemini</span>&nbsp;tarafından&nbsp;<span>Python</span>&nbsp;aracılığıyla geliştirilmiştir.`,
-                feat1_title: "Agresif Yıkım Motoru", feat1_desc: "PowerShell altyapısıyla desteklenen özel algoritma, antivirüs kilitlerini aşarak inatçı dosyaları zorla siler ve kalıcı olarak yok eder.",
-                feat2_title: "Multi-Disk Taraması", feat2_desc: "Sadece C: diskini değil; bilgisayarınıza bağlı D:, E: gibi tüm disklerdeki Steam ve Epic Games kütüphanelerini eşzamanlı olarak tarar.",
-                feat3_title: "Açık Kaynak & Güvenilir", feat3_desc: "Tamamen açık kaynak kodlu yapısı sayesinde arka planda ne çalıştığını tam olarak bilirsiniz. %100 şeffaf ve güvenilir bir sistem temizliği sunar.",
-                upd_title: "v1.0 Güncelleme Notları",
-                upd_list: `<li>PowerShell destekli agresif yıkım motoru entegre edildi.</li><li>Otomatik sistem dili algılama (29 farklı dil desteği) eklendi.</li><li>D: ve E: diskleri için bağımsız Steam/Epic Games tarama modülü geliştirildi.</li><li>Karanlık ve Aydınlık tema arayüz geçişleri pürüzsüzleştirildi.</li>`,
-                dl_sub: "Sisteminizi ağırlaştıran tüm çöp dosyalara veda etmeye hazırsınız. Özellikleri inceleyin ve kuruluma başlayın.",
-                dl_list: `<li><strong>Taşınabilir (Portable) Çalışma:</strong> Kurulum gerektirmez, direkt çalışır.</li><li><strong>Kayıt Defteri Navigasyonu:</strong> Hatalı kayıtları doğrudan Regedit üzerinde gösterir.</li><li><strong>Güvenlik Filtresi:</strong> Kritik Windows sistem dosyalarını otomatik olarak kırmızı ile işaretleyip korur.</li>`,
-                dl_warn: `<strong>⚠️ Önemli Dil Bilgilendirmesi:</strong><br><br>Uygulamanın ana arayüzü ve güvenlik etiketleri sisteminizin dilini otomatik algılayıp kendi dilinize (29 dil desteği) adapte olur. <strong>Ancak</strong>, program içindeki uzun güncelleme notları ve yasal sorumluluk reddi metinleri standartları korumak adına evrensel dil olan <strong>İngilizce</strong> olarak sunulmaktadır.`,
-                dl_btn_big: "Güvenli İndir (.exe)",
-                why_title_p1: "Neden", why_sub: "Klasik kaldırma araçlarının aksine, sistemin derinliklerine inen farklı bir vizyon.",
-                why_texts: `<p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Standart Windows "Program Ekle/Kaldır" aracı, uygulamaları silerken arkalarında megabaytlarca geçici dosya, içi boş klasörler ve kayıt defteri çöpü bırakır. Bu çöpler zamanla sisteminizi yavaşlatır ve depolama alanınızı işgal eder.</p><p style="margin-bottom: 1.5rem; color: var(--text-secondary);">HyperZero, bir programı sildikten sonra geriye kalan o gizli kırıntıları ismine göre tüm disklerde (Sadece C değil; D, E, harici diskler) milisaniyeler içinde arar.</p><p style="margin-bottom: 1.5rem; color: var(--text-primary); font-weight: 600;">Bütün dosyaların konumlarını analiz edip manuel olarak silmeyi destekler.</p><p style="color: var(--text-secondary);">Kilitli veya "Kullanımda" olduğu için silinemeyen inatçı dosyalar için entegre PowerShell yıkım motorunu devreye sokar ve hedefi acımasızca yok eder. Üstelik tamamen açık kaynaklıdır; sisteminizde arka kapı bırakmaz, veri toplamaz.</p><div class="btn-container" style="justify-content: flex-start; margin-top: 3rem;"><button class="btn btn-secondary" onclick="navigateTo('page-home')">Ana Sayfaya Dön</button></div>`,
-                footer_note: "* HyperZero arayüzü 29 dili destekler. Uygulamanın global uyumluluğunu sağlamak amacıyla teknik dokümantasyon ve yasal sorumluluk uyarıları evrensel dil olan İngilizce olarak sunulmaktadır.",
-                footer_link: "Gizlilik Politikası & İletişim",
-                modal_dl_sub: "Uygulamayı indirmeden önce lütfen aşağıdaki uyarıyı dikkate alın.",
-                modal_dl_warn: `<strong>⚠️ Önemli Dil Bilgilendirmesi:</strong><br><br>Uygulamanın ana arayüzü ve güvenlik etiketleri sisteminizin dilini otomatik algılayıp kendi dilinize (29 dil desteği) adapte olur. <strong>Ancak</strong>, program içindeki uzun güncelleme notları ve yasal sorumluluk reddi metinleri standartları korumak adına evrensel dil olan <strong>İngilizce</strong> olarak sunulmaktadır.`,
-                modal_dl_btn: "Windows İçin İndir (.exe)",
-                mod_contact_title: "İletişim", mod_contact_text: "Her türlü soru, hata bildirimi veya katkılarınız için bana doğrudan ulaşabilirsiniz:",
-                mod_legal_title: "Gizlilik Politikası & Lisans",
-                mod_legal_texts: `<h3>1. Açık Kaynak ve Eğitimsel Vizyon</h3><p>HyperZero tamamen eğitimsel amaçlarla geliştirilmiş, %100 açık kaynaklı ve <strong>reklamsız</strong> bir projedir. Ticari bir kar amacı gütmez. Arka planda gizli bir veri analizi yapmaz, kişisel verilerinizi toplamaz ve hiçbir sunucuyla dış veri alışverişinde bulunmaz.</p><h3>2. Geri Alınamaz İşlemler Uyarısı</h3><p>Bu yazılım, inatçı dosyaları aşmak için özel yetkiler kullanır. Sistem dosyalarını fiziksel olarak, geri dönüşüm kutusuna göndermeden <strong>kalıcı olarak yok eder.</strong> Yapılan silme işlemlerinin geri alınması mümkün değildir.</p><div class="disclaimer-box" style="margin: 1.5rem 0; padding: 1.2rem;"><h4 style="color: #E74C3C; margin-bottom: 0.5rem;">⚠️ Sorumluluk Reddi</h4><p>Uygulamanın kullanımından doğabilecek her türlü veri kaybı, işletim sistemi hasarı, donanımsal arıza veya hukuki sorundan geliştirici (HyperZero Dev) <strong>hiçbir şekilde sorumlu tutulamaz.</strong> Yanlış bir sistem dosyasının silinmesi doğrudan kullanıcının sorumluluğundadır. İndirerek bu riskleri tamamen kabul etmiş sayılırsınız.</p></div><h3>3. Yazılım Lisansı</h3><p>HyperZero, açık kaynak dünyasının özgür ruhunu destekleyen <strong>MIT Lisansı</strong> ile dağıtılmaktadır. Kodları inceleyebilir, değiştirebilir ve kendi projelerinizde kullanabilirsiniz.</p><p style="margin-top: 1.5rem; font-weight: 600; color: var(--text-primary);">Kaynak Kod: <a href="https://github.com/HyperZeroDev/HyperZero" target="_blank" style="color: var(--meta-blue-end); text-decoration: none; font-weight: 400;">[https://github.com/HyperZeroDev/HyperZero?tab=MIT-1-ov-file]</a></p>`
-            }
-        };
+      <div class="footer-bottom">
+        <span>© 2026 HyperZero · MIT</span>
+        <div class="footer-bottom-links">
+          <a href="#" id="open-privacy" data-tr>Gizlilik & Lisans</a>
+          <a href="#" id="open-privacy-en" data-en>Privacy & License</a>
+          <span class="dot-sep">·</span>
+          <span data-tr>Python · customtkinter ile yazıldı</span>
+          <span data-en>Built with Python · customtkinter</span>
+        </div>
+      </div>
+    </div>
+  </footer>
 
-        document.getElementById('langSelect').addEventListener('change', function() {
-            const lang = this.value;
-            const dict = translations[lang];
-            
-            // Veri etiketli tüm yazıları çevir (HTML etiketlerini okuyabilmesi için hepsini innerHTML yapıyoruz)
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if(dict[key]) {
-                    el.innerHTML = dict[key];
-                }
-            });
+  <!-- ===== PRIVACY & LICENSE MODAL ===== -->
+  <div class="modal-backdrop" id="privacy-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-labelledby="privacy-title">
+      <button class="modal-close" id="close-privacy" aria-label="Kapat">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <div class="modal-body">
+        <h2 id="privacy-title">
+          <span data-tr>Gizlilik ve Lisans</span>
+          <span data-en>Privacy and License</span>
+        </h2>
 
-            // HTML Bloklarını çevir
-            document.getElementById('updateList').innerHTML = dict.upd_list;
-            document.getElementById('dlList').innerHTML = dict.dl_list;
-            document.getElementById('whyTexts').innerHTML = dict.why_texts;
-            document.getElementById('legalTexts').innerHTML = dict.mod_legal_texts;
-        });
+        <div data-tr-block>
+          <h3>Topladığımız veriler</h3>
+          <p>Hiç. HyperZero ne uygulamada ne de bu sitede kişisel veri toplar, telemetri gönderir, analiz aracı çalıştırır ya da çerez kullanır. Sunucuya hiçbir bilgi iletilmez.</p>
+          <p class="muted">Tek istisna: GitHub'dan <code>.exe</code>'yi indirdiğinizde, GitHub kendi sunucu loglarını tutar. Bu HyperZero'nun değil, GitHub'ın politikasıdır.</p>
 
-        // 5. TYPING EFEKTİ (Daktilo)
-        const words = ["Zero", "Cleaner", "Uninstaller", "Tracker"];
-        const typingText = document.getElementById("typing-text");
-        let wordIndex = 0; let charIndex = 0; let isDeleting = false;
-        
-        function typeEffect() {
-            const currentWord = words[wordIndex];
-            if (isDeleting) {
-                let currentText = currentWord.substring(0, charIndex - 1);
-                typingText.innerHTML = currentText === "" ? "&nbsp;" : currentText;
-                charIndex--;
-            } else {
-                typingText.innerHTML = currentWord.substring(0, charIndex + 1);
-                charIndex++;
-            }
-            
-            let typingSpeed = isDeleting ? 80 : 150;
-            if (!isDeleting && charIndex === currentWord.length) {
-                typingSpeed = 2500;
-                isDeleting = true;
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                wordIndex = (wordIndex + 1) % words.length;
-                typingSpeed = 400;
-            }
-            setTimeout(typeEffect, typingSpeed);
-        }
-        
-        document.addEventListener("DOMContentLoaded", () => {
-            typingText.innerHTML = "&nbsp;";
-            setTimeout(typeEffect, 800);
-        });
-    </script>
+          <h3>Geri alınamaz işlemler</h3>
+          <p>HyperZero dosyaları geri dönüşüm kutusuna göndermez; doğrudan ve kalıcı olarak siler. Silme işlemi tamamlandığında geri alma yöntemi yoktur. <code>Windows\\</code>, <code>System32\\</code>, <code>drivers\\</code> dizinlerindeki eşleşmeler arayüzde otomatik olarak <strong style="color:var(--critical)">kırmızı (Kritik)</strong> ile işaretlenir; ne yaptığınızdan emin değilseniz bu dosyalara dokunmayın.</p>
+
+          <h3>Sorumluluk</h3>
+          <p>Yanlış bir sistem dosyasının silinmesinden doğan veri kaybı, işletim sistemi arızası veya donanım problemi için geliştirici sorumluluk kabul etmez. Programı kullanmaya başlamakla bu riski üstlenmiş olursunuz.</p>
+
+          <h3>Lisans</h3>
+          <p>HyperZero <strong>MIT lisansı</strong> altında dağıtılır. Kaynak kodu okuyabilir, değiştirebilir, kendi projelerinizde kullanabilirsiniz. Tek koşul: lisans bildiriminin korunması.</p>
+          <p><a href="https://github.com/HyperZeroDev/HyperZero/blob/main/LICENSE" target="_blank" rel="noopener" class="link">MIT lisansının tam metnini GitHub'da okuyun →</a></p>
+
+          <h3>İletişim</h3>
+          <p>Hata bildirimi, soru veya katkı için: <a href="https://github.com/HyperZeroDev/HyperZero/issues" target="_blank" rel="noopener" class="link">GitHub Issues</a>.</p>
+        </div>
+
+        <div data-en-block>
+          <h3>Data we collect</h3>
+          <p>None. Neither HyperZero nor this site collects personal data, sends telemetry, runs analytics, or uses cookies. No information is transmitted to any server.</p>
+          <p class="muted">One exception: when you download the <code>.exe</code> from GitHub, GitHub keeps its own server logs. That's GitHub's policy, not HyperZero's.</p>
+
+          <h3>Irreversible operations</h3>
+          <p>HyperZero does not send files to the Recycle Bin; it deletes them directly and permanently. Once a deletion completes, there is no undo. Matches inside <code>Windows\\</code>, <code>System32\\</code>, and <code>drivers\\</code> are automatically flagged <strong style="color:var(--critical)">red (Critical)</strong> in the interface — don't touch these unless you know exactly what you're doing.</p>
+
+          <h3>Liability</h3>
+          <p>The developer accepts no responsibility for data loss, operating-system malfunctions, or hardware issues caused by deleting the wrong file. By using the program, you assume that risk.</p>
+
+          <h3>License</h3>
+          <p>HyperZero is distributed under the <strong>MIT License</strong>. You can read the source, modify it, and use it in your own projects. The only condition: keep the license notice intact.</p>
+          <p><a href="https://github.com/HyperZeroDev/HyperZero/blob/main/LICENSE" target="_blank" rel="noopener" class="link">Read the full MIT license on GitHub →</a></p>
+
+          <h3>Contact</h3>
+          <p>For bug reports, questions, or contributions: <a href="https://github.com/HyperZeroDev/HyperZero/issues" target="_blank" rel="noopener" class="link">GitHub Issues</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Language toggle =====
+    function setLang(lang) {
+      document.body.setAttribute('data-lang', lang);
+      document.documentElement.setAttribute('lang', lang);
+      document.getElementById('btn-tr').classList.toggle('active', lang === 'tr');
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+      document.querySelectorAll('[data-en-block]').forEach(el => {
+        el.style.display = (lang === 'en') ? 'block' : 'none';
+      });
+      document.querySelectorAll('[data-tr-block]').forEach(el => {
+        el.style.display = (lang === 'tr') ? 'block' : 'none';
+      });
+      try { localStorage.setItem('hz-lang', lang); } catch (e) {}
+    }
+
+    // ===== Theme toggle =====
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      const screenshot = document.getElementById('screenshot');
+      if (screenshot) {
+        screenshot.src = theme === 'dark' ? screenshot.dataset.dark : screenshot.dataset.light;
+      }
+      try { localStorage.setItem('hz-theme', theme); } catch (e) {}
+    }
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    // ===== Initial state =====
+    (function() {
+      // Theme: stored > system preference > light
+      let savedTheme = null;
+      try { savedTheme = localStorage.getItem('hz-theme'); } catch (e) {}
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        setTheme(savedTheme);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setTheme('dark');
+      } else {
+        setTheme('light');
+      }
+
+      // Language: stored > navigator > tr
+      let savedLang = null;
+      try { savedLang = localStorage.getItem('hz-lang'); } catch (e) {}
+      if (savedLang === 'tr' || savedLang === 'en') {
+        setLang(savedLang);
+      } else {
+        const sysLang = (navigator.language || 'tr').toLowerCase();
+        setLang(sysLang.startsWith('tr') ? 'tr' : 'en');
+      }
+    })();
+
+    // ===== Wire up theme toggle =====
+    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+    // ===== Nav scroll state =====
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 8);
+    }, { passive: true });
+
+    // ===== Privacy modal =====
+    const modal = document.getElementById('privacy-modal');
+    function openModal(e) {
+      if (e) e.preventDefault();
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('open-privacy').addEventListener('click', openModal);
+    document.getElementById('open-privacy-en').addEventListener('click', openModal);
+    document.getElementById('close-privacy').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    });
+  </script>
+
 </body>
 </html>
